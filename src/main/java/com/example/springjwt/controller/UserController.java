@@ -28,6 +28,12 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
+    @GetMapping("/user/{username}")
+    public ResponseEntity<User>getUser(@PathVariable String username){
+
+        return ResponseEntity.ok().body(userService.getUser(username));
+    }
+
     @PostMapping("/user/save")
     public ResponseEntity<User> saveUser(@RequestBody User user){
         //here we want to return HTTP 201 which indicates a resource is created on the server which requires the uri of the created resource

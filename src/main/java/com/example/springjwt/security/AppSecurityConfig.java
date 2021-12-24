@@ -12,10 +12,10 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter{
 
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception{
-//        http.cors().and().csrf().disable();
-//    }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception{
+        http.cors().and().csrf().disable();
+    }
 
 //    @Bean
 //    CorsConfigurationSource corsConfigurationSource() {
