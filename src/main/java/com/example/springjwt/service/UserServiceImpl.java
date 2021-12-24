@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User saveUser(@RequestBody User user) {
+    public User saveUser(User user) {
        userRepo.save(user);
        log.info("user {} saved", user.getUsername());
        return user;

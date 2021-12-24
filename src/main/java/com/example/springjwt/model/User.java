@@ -13,7 +13,7 @@ import static javax.persistence.GenerationType.AUTO;
 @Entity
 public class User {
     @Id
-    @GeneratedValue(strategy = AUTO)
+//    @GeneratedValue(strategy = AUTO)
     private long id;
     private String name;
     private String username;
