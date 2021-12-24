@@ -51,9 +51,15 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUser(String username) {
-       User user = userRepo.findUserByUsername(username);
-       log.info("fetching user {}", user.getUsername());
-       return user;
+       User user = null;
+       if(userRepo.existsByUsername(username)){
+           user = userRepo.findUserByUsername(username);
+           log.info("fetching user {}", user.getUsername());
+           return user;
+       }else {
+           log.info("this user doesn't exist");
+           return user;
+       }
 
     }
 
@@ -62,5 +68,25 @@ public class UserServiceImpl implements UserService{
         List<User> userList = userRepo.findAll();
         log.info("fetching all users");
         return userList;
+    }
+
+    @Override
+    public User deleteUser(String username) {
+        User user = null;
+      if(userRepo.existsByUsername(username)){
+         user = userRepo.findUserByUsername(username);
+         userRepo.delete(user);
+         log.info("deleting user {} from the database", user.getUsername());
+         return user;
+      }else{
+          log.info("user you want to delete doesn't exist");
+          return user;
+      }
+
+    }
+
+    @Override
+    public Role deleteRole(String role) {
+        return null;
     }
 }

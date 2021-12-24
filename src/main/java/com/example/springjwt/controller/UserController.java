@@ -30,8 +30,20 @@ public class UserController {
 
     @GetMapping("/user/{username}")
     public ResponseEntity<User>getUser(@PathVariable String username){
+        if(userService.getUser(username) == null){
+            return ResponseEntity.notFound().build();
+        }else {
+            return ResponseEntity.ok().body(userService.getUser(username));
+        }
+    }
 
-        return ResponseEntity.ok().body(userService.getUser(username));
+    @DeleteMapping("/user/{username}")
+    public ResponseEntity<User> deleteUser(@PathVariable String username){
+        if(userService.getUser(username) == null){
+            return ResponseEntity.notFound().build();
+        }else {
+            return ResponseEntity.ok().body(userService.deleteUser(username));
+        }
     }
 
     @PostMapping("/user/save")
