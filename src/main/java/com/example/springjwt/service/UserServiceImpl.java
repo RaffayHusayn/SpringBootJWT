@@ -86,7 +86,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Role deleteRole(String role) {
-        return null;
+    public void deleteRoleFromUser(String username, String roleName) {
+        User user = userRepo.findUserByUsername(username);
+        Role role = roleRepo.findRoleByName(roleName);
+        if(user != null && role != null){
+            user.getRoles().remove(role);
+        }
     }
 }

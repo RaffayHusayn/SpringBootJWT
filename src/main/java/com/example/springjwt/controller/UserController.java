@@ -60,11 +60,21 @@ public class UserController {
         return ResponseEntity.created(uri).body(userService.saveRole(role));
     }
 
+
+
+    //json raw request to use: { "username":---- , "role":----} because of the RoleToUserForm class field names
     @PostMapping("/role/addtouser")
     public ResponseEntity<?> saveRoleToUser(@RequestBody RoleToUserForm form ){
         //here we just want to return a HTTP OK reponse with no body
-       userService.addRoleToUser(form.getUser(), form.getRole());
+       userService.addRoleToUser(form.getUsername(), form.getRole());
        return ResponseEntity.ok().build();
+    }
+
+    //json raw request to use: { "username":---- , "role":----} because of the RoleToUserForm class field names
+    @PostMapping("role/deletefromuser")
+    public ResponseEntity<?> deleteRoleFromUser(@RequestBody RoleToUserForm form){
+        userService.deleteRoleFromUser(form.getUsername(), form.getRole());
+        return ResponseEntity.ok().build();
     }
 
 }
@@ -73,13 +83,13 @@ public class UserController {
 class RoleToUserForm{
 
     private String role;
-    private String user;
+    private String username;
 
     public String getRole() {
         return role;
     }
 
-    public String getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
 }
