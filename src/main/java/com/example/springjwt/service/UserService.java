@@ -15,4 +15,5 @@ public interface UserService {
     List<User> getUsers();
     User deleteUser(String username);
     void deleteRoleFromUser(String username, String roleName);
+    Boolean roleExistInUser(String username, String role);
 }

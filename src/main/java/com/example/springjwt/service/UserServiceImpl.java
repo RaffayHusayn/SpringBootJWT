@@ -93,4 +93,14 @@ public class UserServiceImpl implements UserService{
             user.getRoles().remove(role);
         }
     }
+
+    @Override
+    public Boolean roleExistInUser(String username, String role) {
+        User user = userRepo.findUserByUsername(username);
+        Role rolename = roleRepo.findRoleByName(role);
+        if(user.getRoles().contains(rolename)){
+            return true;
+        }
+        return false;
+    }
 }

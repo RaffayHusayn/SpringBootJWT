@@ -4,6 +4,7 @@ import com.example.springjwt.model.Role;
 import com.example.springjwt.model.User;
 import com.example.springjwt.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -65,6 +66,10 @@ public class UserController {
     //json raw request to use: { "username":---- , "role":----} because of the RoleToUserForm class field names
     @PostMapping("/role/addtouser")
     public ResponseEntity<?> saveRoleToUser(@RequestBody RoleToUserForm form ){
+        if(userService.roleExistInUser(form.getUsername(), form.getRole())){
+            //here we just want to return HTTP 409 conflict means the role already exist with the user so can't add again
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
         //here we just want to return a HTTP OK reponse with no body
        userService.addRoleToUser(form.getUsername(), form.getRole());
        return ResponseEntity.ok().build();
@@ -73,8 +78,12 @@ public class UserController {
     //json raw request to use: { "username":---- , "role":----} because of the RoleToUserForm class field names
     @PostMapping("role/deletefromuser")
     public ResponseEntity<?> deleteRoleFromUser(@RequestBody RoleToUserForm form){
-        userService.deleteRoleFromUser(form.getUsername(), form.getRole());
-        return ResponseEntity.ok().build();
+        if(userService.roleExistInUser(form.getUsername(), form.getRole())) {
+            userService.deleteRoleFromUser(form.getUsername(), form.getRole());
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
