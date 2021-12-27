@@ -7,17 +7,28 @@ import com.example.springjwt.model.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service @Transactional @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepo;
     private final RoleRepository roleRepo;
+    @Autowired
+    PasswordEncoder passwordEncoder; // this works because we have a bean which returns a BcryptPasswordEncoder in the main method
 
     @Autowired
     public UserServiceImpl(UserRepository userRepo, RoleRepository roleRepo){
@@ -25,8 +36,30 @@ public class UserServiceImpl implements UserService{
         this.roleRepo = roleRepo;
     }
 
+   /*
+   Method to implement for UserDetailsService
+    */
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepo.findUserByUsername(username);
+        if(user == null){
+            log.error("No user with username : {} found", user.getUsername());
+            throw new UsernameNotFoundException("user not found in the database");
+        }else{
+            log.info("user: {} found in the database", user.getUsername());
+        }
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        });
+
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+    }
+
     @Override
     public User saveUser(User user) {
+       user.setPassword(passwordEncoder.encode(user.getPassword()));
        userRepo.save(user);
        log.info("user {} saved", user.getUsername());
        return user;
@@ -103,4 +136,5 @@ public class UserServiceImpl implements UserService{
         }
         return false;
     }
+
 }
