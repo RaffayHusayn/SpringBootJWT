@@ -2,6 +2,7 @@ package com.example.springjwt.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -70,7 +76,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         /*
         Sending the JWT tokens in the response Header
          */
-        response.setHeader("access_token", accessToken);
-        response.setHeader("refresh_token", refreshToken);
+//        response.setHeader("access_token", accessToken);
+//        response.setHeader("refresh_token", refreshToken);
+        /*
+        Sending JWT tokens in the response Body as JSON objects
+         */
+        Map<String , String> token = new HashMap<>();
+        token.put("access_token",accessToken);
+        token.put("refresh_token", refreshToken);
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), token);
     }
 }
