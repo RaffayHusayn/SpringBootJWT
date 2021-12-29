@@ -52,7 +52,7 @@ public class SpringBootJwtBoilerPlateApplication {
             userService.saveUser(new User(1002, "ayesha", "ayeshahusayn", "password2", new ArrayList<>()));
             userService.saveUser(new User(1003, "nabia", "nabia5", "hmhmhm", new ArrayList<>()));
             userService.saveUser(new User(1004, "shehla", "shehlatab", "hmhmhm", new ArrayList<>()));
-            userService.saveUser(new User(1003, "zafar", "zafarhusayn", "password", new ArrayList<>()));
+            userService.saveUser(new User(1005, "zafar", "zafarhusayn", "password", new ArrayList<>()));
 
             userService.addRoleToUser("raffayhusayn", "ROLE_USER");
             userService.addRoleToUser("raffayhusayn", "ROLE_ADMIN");

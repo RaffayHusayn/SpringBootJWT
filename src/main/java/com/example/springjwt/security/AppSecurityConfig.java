@@ -57,17 +57,5 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter{
         http.authorizeRequests().anyRequest().permitAll();
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
     }
-//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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
-//    @Bean
-//    CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("*"));
-//        configuration.setAllowedMethods(Arrays.asList("*"));
-//        configuration.setAllowedHeaders(Arrays.asList("*"));
-//        configuration.setAllowCredentials(true);
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 
 }
