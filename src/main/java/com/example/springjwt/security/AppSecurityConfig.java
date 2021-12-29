@@ -52,9 +52,16 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(HttpSecurity http) throws Exception{
-        http.cors().and().csrf().disable();
+        //so that we can create new users using POST requests from anywhere and we aren't stopped by csrf,
+        //there should be a better way to do it but for now it is fine.
+        http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().anyRequest().permitAll();
+        //everyone is allowed to login
+        http.authorizeRequests().antMatchers("/login/**").permitAll();
+        http.authorizeRequests().antMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+        http.authorizeRequests().antMatchers("user/save/**").hasAnyAuthority("ROLE_SUPER_ADMIN");
+        http.authorizeRequests().anyRequest().authenticated();
+
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
     }
 
