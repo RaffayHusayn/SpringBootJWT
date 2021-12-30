@@ -56,8 +56,10 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter{
         //there should be a better way to do it but for now it is fine.
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        //everyone is allowed to login
+        //everyone has access to login endpoint which is provided by Spring and not defined by us,
+        // we can obviously change the name of this and everything later but let's leave it for now
         http.authorizeRequests().antMatchers("/login/**").permitAll();
+
         http.authorizeRequests().antMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
         http.authorizeRequests().antMatchers("user/save/**").hasAnyAuthority("ROLE_SUPER_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
