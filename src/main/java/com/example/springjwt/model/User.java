@@ -1,14 +1,10 @@
 package com.example.springjwt.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.GeneratorType;
-import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.persistence.GenerationType.AUTO;
 
 @Entity
 public class User {

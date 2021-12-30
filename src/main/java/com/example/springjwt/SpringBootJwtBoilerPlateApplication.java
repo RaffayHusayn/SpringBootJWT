@@ -1,11 +1,8 @@
 package com.example.springjwt;
 
-import ch.qos.logback.core.pattern.color.BoldCyanCompositeConverter;
 import com.example.springjwt.model.Role;
 import com.example.springjwt.model.User;
 import com.example.springjwt.service.UserService;
-import com.example.springjwt.service.UserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,11 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
 
 @SpringBootApplication
 public class SpringBootJwtBoilerPlateApplication {
