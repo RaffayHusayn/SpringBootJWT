@@ -4,7 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.tomcat.util.http.parser.Authorization;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,13 +16,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     /*
      * OncePerRequest filter intercepts every request that comes in
@@ -32,7 +37,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //don't apply this filter to login path because that should be accessible to everyone
-        if(request.getServletPath().equals("/login")){
+        if(request.getServletPath().equals("/login") || request.getServletPath().equals("/token/refresh")){
             //just letting the request and response pass through to the other filters in the chain
             filterChain.doFilter(request, response);
         }else{
@@ -64,9 +69,19 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                    filterChain.doFilter(request, response);
 
                }catch(Exception e){
+                   log.error("Error logging in : {}", e.getMessage());
+                   response.setHeader("Error", e.getMessage());
+                   //FORBIDDEN.value() just gives the Error code 403
+                   response.setStatus(FORBIDDEN.value());
+                   Map<String, String> error = new HashMap<>();
+                   error.put("error_message", e.getMessage());
+                   response.setContentType(APPLICATION_JSON_VALUE);
+                   new ObjectMapper().writeValue(response.getOutputStream(), error);
 
                }
 
+            }else{
+                filterChain.doFilter(request, response);
             }
 
 

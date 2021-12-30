@@ -1,5 +1,6 @@
 package com.example.springjwt.security;
 import com.example.springjwt.filter.CustomAuthenticationFilter;
+import com.example.springjwt.filter.CustomAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -58,13 +60,16 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter{
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         //everyone has access to login endpoint which is provided by Spring and not defined by us,
         // we can obviously change the name of this and everything later but let's leave it for now
-        http.authorizeRequests().antMatchers("/login/**").permitAll();
+        http.authorizeRequests().antMatchers("/login/**", "/token/refresh/**").permitAll();
 
         http.authorizeRequests().antMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
         http.authorizeRequests().antMatchers("user/save/**").hasAnyAuthority("ROLE_SUPER_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
 
+        //       Adding filters
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+        // AddFilterBefore -> means that use this filter before using any other filters
+        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
 }
