@@ -4,6 +4,7 @@ import com.example.springjwt.filter.CustomAuthenticationFilter;
 import com.example.springjwt.filter.CustomAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -63,6 +64,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         3. ROLE_USER and ROLE_ADMIN can get users or one individual user
         4. Everyone can login
         5. Everyone can get a new access JWT token using their refresh token
+        6. You can also specify which Methods are accessible at a specific end point to a role
+           eg: GET "/user/{username}" is available for role_user and role_admin but DELETE: "/user/{username}" is only available to role_Admin
 
          */
 
@@ -74,7 +77,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/login/**", "/token/refresh/**").permitAll() //everyone is allowed to login and refresh token, No need for authentication or any assigned roles(Authentication in this case is done using JWT Authorization token
                 .antMatchers("/role/**").hasAnyAuthority("ROLE_SUPER_ADMIN") // only super admins can create add or remove roles to users
                 .antMatchers("/user/save").hasAnyAuthority("ROLE_MANAGER", "ROLE_SUPER_ADMIN") // manager and super admin can create new users
-                .antMatchers("/delete/user/**").hasAnyAuthority("ROLE_ADMIN") //Admin can delete users
+                .antMatchers(HttpMethod.DELETE, "/user/**").hasAnyAuthority("ROLE_ADMIN") //Admin can delete users
                 .antMatchers("/users", "/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") //users and admin can look at users or individual users
                 //here we can do .anyRequest.authorize() instead or .hasAnyAuthority() or .permitAll() depending on what you need
                 .anyRequest().denyAll(); // all other requests are denied
