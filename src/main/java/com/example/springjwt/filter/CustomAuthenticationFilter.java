@@ -58,7 +58,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
          */
         String accessToken = JWT.create()
                                 .withSubject(user.getUsername())
-                                .withExpiresAt(new Date(System.currentTimeMillis()+ 10*60*1000)) //expires in 10 mins
+                                .withExpiresAt(new Date(System.currentTimeMillis()+ 100*60*1000)) //expires in 100 mins
                                 .withIssuer(request.getRequestURL().toString())
                 //:: is called a method reference introduced in java8, getAuthority is a method that returns a String
                                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
