@@ -68,10 +68,11 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter{
          */
         http.authorizeRequests()
                 .antMatchers("/login/**", "/token/refresh/**").permitAll() //everyone is allowed to login and refresh token, No need for authentication or any assigned roles(Authentication in this case is done using JWT Authorization token
+                .antMatchers("/role/**").hasAnyAuthority("ROLE_SUPER_ADMIN") // only super admins can create add or remove roles to users
                 .antMatchers("/user/save").hasAnyAuthority( "ROLE_MANAGER", "ROLE_SUPER_ADMIN") // manager and super admin can create new users
-                .antMatchers( "/delete/user/**").hasAnyAuthority("ROLE_ADMIN")
-                .antMatchers( "/users","/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                .anyRequest().denyAll();
+                .antMatchers( "/delete/user/**").hasAnyAuthority("ROLE_ADMIN") //Admin can delete users
+                .antMatchers( "/users","/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") //users and admin can look at users or individual users
+                .anyRequest().denyAll(); // all other requests are denied
 
         //       Adding filters
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
