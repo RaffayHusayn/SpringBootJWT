@@ -3,6 +3,7 @@ import com.example.springjwt.filter.CustomAuthenticationFilter;
 import com.example.springjwt.filter.CustomAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -55,11 +56,22 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter{
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         //everyone has access to login endpoint which is provided by Spring and not defined by us,
         // we can obviously change the name of this and everything later but let's leave it for now
-        http.authorizeRequests().antMatchers("/login/**", "/token/refresh/**").permitAll();
+        /*
+        rules that I want:
 
-        http.authorizeRequests().antMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
-        http.authorizeRequests().antMatchers("user/save/**").hasAnyAuthority("ROLE_SUPER_ADMIN");
-        http.authorizeRequests().anyRequest().authenticated();
+        1. Managers and Super_Admins can create new users
+        2. ROLE_ADMIN can delete users
+        3. ROLE_USER and ROLE_ADMIN can get users or one individual user
+        4. Everyone can login
+        5. Everyone can get a new access JWT token using their refresh token
+
+         */
+        http.authorizeRequests()
+                .antMatchers("/login/**", "/token/refresh/**").permitAll() //everyone is allowed to login and refresh token, No need for authentication or any assigned roles(Authentication in this case is done using JWT Authorization token
+                .antMatchers("/user/save").hasAnyAuthority( "ROLE_MANAGER", "ROLE_SUPER_ADMIN") // manager and super admin can create new users
+                .antMatchers( "/delete/user/**").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers( "/users","/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .anyRequest().denyAll();
 
         //       Adding filters
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
