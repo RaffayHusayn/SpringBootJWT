@@ -72,6 +72,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers("/user/save").hasAnyAuthority( "ROLE_MANAGER", "ROLE_SUPER_ADMIN") // manager and super admin can create new users
                 .antMatchers( "/delete/user/**").hasAnyAuthority("ROLE_ADMIN") //Admin can delete users
                 .antMatchers( "/users","/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") //users and admin can look at users or individual users
+                //here we can do .anyRequest.authorize() instead or .hasAnyAuthority() or .permitAll() depending on what you need
                 .anyRequest().denyAll(); // all other requests are denied
 
         //       Adding filters
