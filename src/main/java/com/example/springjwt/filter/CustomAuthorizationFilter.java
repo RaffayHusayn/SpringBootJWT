@@ -66,7 +66,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                    });
                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                   filterChain.doFilter(request, response);
+                   filterChain.doFilter(request, response); //this is required to let the request and response object go through the filter
 
                }catch(Exception e){
                    log.error("Error logging in : {}", e.getMessage());
@@ -81,8 +81,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                }
 
             }else{
-                filterChain.doFilter(request, response);
-            }
+                filterChain.doFilter(request, response); //this is required to let the request and response object go through the filter
 
 
         }
