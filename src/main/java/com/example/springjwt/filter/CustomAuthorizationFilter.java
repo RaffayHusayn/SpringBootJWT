@@ -37,57 +37,56 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //don't apply this filter to login path because that should be accessible to everyone
-        if(request.getServletPath().equals("/login") || request.getServletPath().equals("/token/refresh")){
+        if (request.getServletPath().equals("/login") || request.getServletPath().equals("/token/refresh")) {
             //just letting the request and response pass through to the other filters in the chain
             filterChain.doFilter(request, response);
-        }else{
+        } else {
 //            AUTHORIZATION is simply a String "authorization" in the backend
 //            it is defined like this ::: public static final String AUTHORIZATION = "Authorization";
             String authorizationHeader = request.getHeader(AUTHORIZATION);
-            if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
-               try{
-                   //basically just removing the starting substring to get rid of Bearer infront of the JWT token
-                   String token = authorizationHeader.substring("Bearer ".length());
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                try {
+                    //basically just removing the starting substring to get rid of Bearer infront of the JWT token
+                    String token = authorizationHeader.substring("Bearer ".length());
 
-                   //redoing it here to get the same algorithm to decode the Token that we used to create it with the same secret and algorithm
-                   Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                   JWTVerifier verifier = JWT.require(algorithm).build();
-                   DecodedJWT decodedJWT = verifier.verify(token);
+                    //redoing it here to get the same algorithm to decode the Token that we used to create it with the same secret and algorithm
+                    Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+                    JWTVerifier verifier = JWT.require(algorithm).build();
+                    DecodedJWT decodedJWT = verifier.verify(token);
 
-                   //getting the contents out of the Token ie username and it's authorities/roles
-                   String username = decodedJWT.getSubject();
-                   String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+                    //getting the contents out of the Token ie username and it's authorities/roles
+                    String username = decodedJWT.getSubject();
+                    String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
 
-                   Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                   //converting the Arrays of String Roles to SimpleGrantedAuthorities which can be used by Spring
-                   stream(roles).forEach(role -> {
-                       authorities.add(new SimpleGrantedAuthority(role));
+                    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    //converting the Arrays of String Roles to SimpleGrantedAuthorities which can be used by Spring
+                    stream(roles).forEach(role -> {
+                        authorities.add(new SimpleGrantedAuthority(role));
 
-                   });
-                   UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                   SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                   filterChain.doFilter(request, response); //this is required to let the request and response object go through the filter
+                    });
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    filterChain.doFilter(request, response); //this is required to let the request and response object go through the filter
 
-               }catch(Exception e){
-                   log.error("Error logging in : {}", e.getMessage());
-                   response.setHeader("Error", e.getMessage());
-                   //FORBIDDEN.value() just gives the Error code 403
-                   response.setStatus(FORBIDDEN.value());
-                   Map<String, String> error = new HashMap<>();
-                   error.put("error_message", e.getMessage());
-                   response.setContentType(APPLICATION_JSON_VALUE);
-                   new ObjectMapper().writeValue(response.getOutputStream(), error);
+                } catch (Exception e) {
+                    log.error("Error logging in : {}", e.getMessage());
+                    response.setHeader("Error", e.getMessage());
+                    //FORBIDDEN.value() just gives the Error code 403
+                    response.setStatus(FORBIDDEN.value());
+                    Map<String, String> error = new HashMap<>();
+                    error.put("error_message", e.getMessage());
+                    response.setContentType(APPLICATION_JSON_VALUE);
+                    new ObjectMapper().writeValue(response.getOutputStream(), error);
 
-               }
+                }
 
-            }else{
+            } else {
                 filterChain.doFilter(request, response); //this is required to let the request and response object go through the filter
 
 
+            }
+
+
         }
-
-
-
-
     }
 }
