@@ -75,7 +75,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         if we use hasAnyRole then we can't use ROLE_ infront of roles because it is added by default
          */
         http.authorizeRequests().antMatchers("/login/**", "/token/refresh/**").permitAll() //everyone is allowed to login and refresh token, No need for authentication or any assigned roles(Authentication in this case is done using JWT Authorization token
-                .antMatchers("/actuator/**").authenticated()//everyone can access actuator
+                .antMatchers("/actuator/**").permitAll()//everyone can access actuator
                 .antMatchers("/role/**").hasAnyAuthority("ROLE_SUPER_ADMIN") // only super admins can create add or remove roles to users
                 .antMatchers("/user/save").hasAnyAuthority("ROLE_MANAGER", "ROLE_SUPER_ADMIN") // manager and super admin can create new users
                 .antMatchers(HttpMethod.DELETE, "/user/**").hasAnyAuthority("ROLE_ADMIN") //Admin can delete users
