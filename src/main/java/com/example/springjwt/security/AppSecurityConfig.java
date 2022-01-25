@@ -51,7 +51,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         //so that we can create new users using POST requests from anywhere and we aren't stopped by csrf,
         //there should be a better way to do it but for now it is fine.
-        http.csrf().disable();
+        http.cors().and().csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         //everyone has access to login endpoint which is provided by Spring and not defined by us,
         // we can obviously change the name of this and everything later but let's leave it for now
